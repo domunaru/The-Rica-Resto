@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Rica Resto - Bogor — Masakan Sunda Autentik</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
+                    colors: {
+                        gold: { 100: '#E8C99B', 200: '#D4A056', 300: '#C8A97E', 400: '#B8944E', 500: '#A07D4F', 600: '#8B6914', 700: '#6B5210' },
+                        dark: { 50: '#0A0A0A', 100: '#080808', 200: '#050505', 300: '#030303' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #050505; color: #ffffff; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0A0A0A; }
+        ::-webkit-scrollbar-thumb { background: #C8A97E; border-radius: 3px; }
+
+        .bg-grid {
+            background-image: linear-gradient(to right, rgba(200,169,126,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(200,169,126,0.03) 1px, transparent 1px);
+            background-size: 4rem 4rem;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+        }
+        .glass-panel {
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(200,169,126,0.08);
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #E8C99B, #C8A97E, #D4A056);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-glow:hover { box-shadow: 0 0 50px rgba(200,169,126,0.08); }
+
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes pulse-gold { 0%,100% { box-shadow: 0 0 0 0 rgba(200,169,126,0.4); } 70% { box-shadow: 0 0 0 15px rgba(200,169,126,0); } }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        .animate-float { animation: float 5s ease-in-out infinite; }
+        .animate-fadeUp { animation: fadeUp 0.8s ease-out forwards; }
+        .animate-pulse-gold { animation: pulse-gold 2.5s ease-in-out infinite; }
+        .animate-marquee { animation: marquee 40s linear infinite; }
+
+        .menu-card { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .menu-card:hover { transform: translateY(-8px); }
+        .menu-card:hover .menu-img { transform: scale(1.08); }
+        .menu-img { transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+
+        .gallery-item { transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+        .gallery-item:hover { transform: scale(1.03); z-index: 10; }
+        .gallery-item:hover img { filter: brightness(1.1); }
+        .gallery-item img { transition: filter 0.5s ease; }
+
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: -4px; left: 50%; width: 0; height: 2px;
+            background: #C8A97E; transition: all 0.3s ease; transform: translateX(-50%);
+        }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+        .tab-btn.active { background: rgba(200,169,126,0.15); color: #E8C99B; border-color: rgba(200,169,126,0.3); }
+
+        .lightbox { opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .lightbox.show { opacity: 1; pointer-events: auto; }
+        .lightbox-img { transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .lightbox.show .lightbox-img { transform: scale(1); }
+
+        .spotlight {
+            background: radial-gradient(600px circle at var(--x, 50%) var(--y, 50%), rgba(200,169,126,0.04), transparent 40%);
+        }
+
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.65) 40%, rgba(5,5,5,0.92) 100%),
+                        url('https://picsum.photos/seed/sundanese-resto/1920/1080.jpg') center/cover no-repeat;
+        }
+
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: 9999; opacity: 0.03;
+        }
+
+        .section-reveal { opacity: 0; transform: translateY(40px); transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .section-reveal.visible { opacity: 1; transform: translateY(0); }
+
+        .price-tag {
+            background: linear-gradient(135deg, rgba(200,169,126,0.15), rgba(200,169,126,0.05));
+            border: 1px solid rgba(200,169,126,0.2);
+        }
+
+        .mobile-menu { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mobile-menu.open { transform: translateX(0); }
+    </style>
+</head>
+<body class="font-inter">
+
+    <!-- Noise Overlay -->
+    <svg class="noise-overlay">
+        <filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/></filter>
+        <rect width="100%" height="100%" filter="url(#noise)"/>
+    </svg>
+
+    <!-- Background Grid -->
+    <div class="fixed inset-0 bg-grid pointer-events-none z-0"></div>
+
+    <!-- Spotlight -->
+    <div id="spotlight" class="fixed inset-0 spotlight pointer-events-none z-0"></div>
+
+    <!-- Navigation -->
+    <nav id="navbar" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 glass-panel rounded-full px-6 py-3 flex items-center gap-8 transition-all duration-300" style="box-shadow: 0 0 20px rgba(0,0,0,0.3);">
+        <a href="#beranda" class="flex items-center gap-2 shrink-0">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold-100 to-gold-400 flex items-center justify-center">
+                <iconify-icon icon="mdi:food-variant" class="text-dark-200 text-sm"></iconify-icon>
+            </div>
+            <span class="text-sm font-semibold tracking-tight hidden sm:block">The Rica</span>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+            <a href="#beranda" class="nav-link text-xs font-medium text-neutral-400 hover:text-white transition-colors active">Beranda</a>
+            <a href="#tentang" class="nav-link text-xs font-medium text-neutral-400 hover:text-white transition-colors">Tentang</a>
+            <a href="#menu" class="nav-link text-xs font-medium text-neutral-400 hover:text-white transition-colors">Menu</a>
+            <a href="#galeri" class="nav-link text-xs font-medium text-neutral-400 hover:text-white transition-colors">Galeri</a>
+            <a href="#lokasi" class="nav-link text-xs font-medium text-neutral-400 hover:text-white transition-colors">Lokasi</a>
+        </div>
+        <a href="#menu" class="hidden md:flex items-center gap-2 bg-gradient-to-r from-gold-100 to-gold-400 text-dark-200 text-xs font-medium px-5 py-2 rounded-full hover:opacity-90 transition-opacity">
+            Pesan Sekarang
+            <iconify-icon icon="mdi:arrow-right" class="text-sm"></iconify-icon>
+        </a>
+        <button id="mobileToggle" class="md:hidden text-white">
+            <iconify-icon icon="mdi:menu" class="text-xl"></iconify-icon>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="mobile-menu fixed top-0 right-0 w-72 h-full z-50 bg-dark-50 border-l border-white/5 p-8 flex flex-col">
+        <button id="mobileClose" class="self-end mb-8 text-neutral-400 hover:text-white transition-colors">
+            <iconify-icon icon="mdi:close" class="text-2xl"></iconify-icon>
+        </button>
+        <div class="flex flex-col gap-6">
+            <a href="#beranda" class="mobile-link text-lg font-medium text-neutral-400 hover:text-gold-100 transition-colors">Beranda</a>
+            <a href="#tentang" class="mobile-link text-lg font-medium text-neutral-400 hover:text-gold-100 transition-colors">Tentang</a>
+            <a href="#menu" class="mobile-link text-lg font-medium text-neutral-400 hover:text-gold-100 transition-colors">Menu</a>
+            <a href="#galeri" class="mobile-link text-lg font-medium text-neutral-400 hover:text-gold-100 transition-colors">Galeri</a>
+            <a href="#lokasi" class="mobile-link text-lg font-medium text-neutral-400 hover:text-gold-100 transition-colors">Lokasi</a>
+        </div>
+        <a href="#menu" class="mobile-link mt-8 flex items-center justify-center gap-2 bg-gradient-to-r from-gold-100 to-gold-400 text-dark-200 text-sm font-medium px-6 py-3 rounded-full">
+            Pesan Sekarang
+            <iconify-icon icon="mdi:arrow-right"></iconify-icon>
+        </a>
+    </div>
+    <div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-40 hidden"></div>
+
+    <!-- ==================== HERO ==================== -->
+    <section id="beranda" class="relative min-h-screen flex items-center justify-center hero-bg overflow-hidden">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-gold-300/10 rounded-full blur-[120px] animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gold-400/8 rounded-full blur-[100px] animate-float" style="animation-delay: -2s;"></div>
+
+        <div class="relative z-10 text-center px-6 max-w-5xl mx-auto pt-32 pb-20">
+            <div class="inline-flex items-center gap-2 glass-panel rounded-full px-5 py-2 mb-8 animate-fadeUp" style="animation-delay: 0.1s;">
+                <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
+                <span class="text-xs font-medium text-neutral-400 tracking-wider uppercase">Buka Setiap Hari • 10:00 - 22:00</span>
+            </div>
+
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tighter leading-[1.05] mb-6 animate-fadeUp" style="animation-delay: 0.2s;">
+                Cita Rasa <span class="gradient-text">Sunda</span><br>Autentik Bogor
+            </h1>
+
+            <p class="text-base md:text-lg font-light text-neutral-400 max-w-2xl mx-auto mb-10 leading-relaxed animate-fadeUp" style="animation-delay: 0.35s;">
+                Nikmati kelezatan masakan Sunda tradisional dengan bahan segar pilihan, diracik oleh chef berpengalaman di suasana yang hangat dan khas Bogor.
+            </p>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fadeUp" style="animation-delay: 0.5s;">
+                <a href="#menu" class="group flex items-center gap-2 bg-gradient-to-r from-gold-100 to-gold-400 text-dark-200 text-sm font-medium px-8 py-3.5 rounded-full hover:opacity-90 transition-all animate-pulse-gold">
+                    Lihat Menu
+                    <iconify-icon icon="mdi:arrow-right" class="transition-transform group-hover:translate-x-1"></iconify-icon>
+                </a>
+                <a href="#lokasi" class="flex items-center gap-2 text-sm font-medium text-neutral-400 hover:text-white px-8 py-3.5 rounded-full border border-white/10 hover:border-white/20 transition-all">
+                    <iconify-icon icon="mdi:map-marker-outline"></iconify-icon>
+                    Temukan Lokasi
+                </a>
+            </div>
+
+            <div class="grid grid-cols-3 gap-8 max-w-lg mx-auto mt-16 animate-fadeUp" style="animation-delay: 0.65s;">
+                <div>
+                    <div class="text-2xl md:text-3xl font-semibold gradient-text">15+</div>
+                    <div class="text-xs text-neutral-500 mt-1">Tahun Melayani</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-semibold gradient-text">50+</div>
+                    <div class="text-xs text-neutral-500 mt-1">Menu Pilihan</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-semibold gradient-text">4.8</div>
+                    <div class="text-xs text-neutral-500 mt-1">Rating Google</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fadeUp" style="animation-delay: 0.8s;">
+            <span class="text-[10px] uppercase tracking-widest text-neutral-600">Scroll</span>
+            <div class="w-5 h-8 border border-neutral-700 rounded-full flex justify-center pt-1.5">
+                <div class="w-1 h-2 bg-gold-300 rounded-full animate-bounce"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== TENTANG ==================== -->
+    <section id="tentang" class="relative py-24 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto section-reveal">
+            <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div class="relative">
+                    <div class="aspect-[4/5] rounded-3xl overflow-hidden border border-white/5">
+                        <img src="https://picsum.photos/seed/sunda-restaurant-interior/600/750.jpg" alt="Interior The Rica Resto" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute -bottom-6 -right-4 md:-right-8 glass-panel rounded-2xl p-5 animate-float">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gold-100 to-gold-400 flex items-center justify-center">
+                                <iconify-icon icon="mdi:star" class="text-dark-200 text-xl"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-lg font-semibold">4.8 / 5.0</div>
+                                <div class="text-xs text-neutral-500">2,400+ Ulasan</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute -top-4 -left-4 w-24 h-24 border-t-2 border-l-2 border-gold-300/30 rounded-tl-3xl pointer-events-none"></div>
+                </div>
+
+                <div>
+                    <div class="inline-flex items-center gap-2 glass-panel rounded-full px-4 py-1.5 mb-6">
+                        <iconify-icon icon="mdi:information-outline" class="text-gold-300 text-sm"></iconify-icon>
+                        <span class="text-[11px] font-medium text-gold-300 tracking-wider uppercase">Tentang Kami</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-6 leading-tight">
+                        Warisan Rasa <span class="gradient-text">Sunda</span> Sejak 2009
+                    </h2>
+                    <p class="text-sm font-light text-neutral-400 leading-relaxed mb-6">
+                        The Rica Resto hadir sebagai rumah makan Sunda autentik di jantung Kota Bogor. Berawal dari kedai kecil di kawasan Pajajaran, kami terus mempertahankan resep-resep turun-temurun yang telah diwariskan selama puluhan tahun.
+                    </p>
+                    <p class="text-sm font-light text-neutral-400 leading-relaxed mb-8">
+                        Setiap hidangan kami dibuat dari bahan-bahan segar pilihan langsung dari petani lokal Bogor dan sekitarnya. Dari ikan gurame segar, ayam kampung, hingga sayuran organik yang kami olah dengan penuh cinta dan keahlian.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gold-300/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <iconify-icon icon="mdi:leaf" class="text-gold-300 text-sm"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium mb-1">Bahan Segar</div>
+                                <div class="text-xs text-neutral-500">Langsung dari petani lokal</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gold-300/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <iconify-icon icon="mdi:fire" class="text-gold-300 text-sm"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium mb-1">Masak Tradisional</div>
+                                <div class="text-xs text-neutral-500">Resep turun-temurun</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gold-300/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <iconify-icon icon="mdi:chair-rolling" class="text-gold-300 text-sm"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium mb-1">Suasana Nyaman</div>
+                                <div class="text-xs text-neutral-500">Semi outdoor & indoor</div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-gold-300/10 flex items-center justify-center shrink-0 mt-0.5">
+                                <iconify-icon icon="mdi:account-group" class="text-gold-300 text-sm"></iconify-icon>
+                            </div>
+                            <div>
+                                <div class="text-sm font-medium mb-1">Ruang Keluarga</div>
+                                <div class="text-xs text-neutral-500">Kapasitas hingga 150 orang</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="#menu" class="group inline-flex items-center gap-2 text-sm font-medium text-gold-100 hover:text-gold-200 transition-colors">
+                        Jelajahi Menu Kami
+                        <iconify-icon icon="mdi:arrow-right" class="transition-transform group-hover:translate-x-1"></iconify-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== MARQUEE ==================== -->
+    <div class="relative py-8 border-y border-white/5 overflow-hidden">
+        <div class="flex animate-marquee whitespace-nowrap">
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Nasi Liwet</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Ikan Bakar Gurame</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Ayam Bakar</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Sayur Asem</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Es Cendol</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Karedok</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Pepes Ikan</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Soto Bandung</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Bajigur</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Nasi Timbel</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Nasi Liwet</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Ikan Bakar Gurame</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Ayam Bakar</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Sayur Asem</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Es Cendol</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Karedok</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Pepes Ikan</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Soto Bandung</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Bajigur</span>
+            <span class="mx-8 text-sm font-light text-neutral-600 flex items-center gap-3"><iconify-icon icon="mdi:star-four-points" class="text-gold-300/40"></iconify-icon> Nasi Timbel</span>
+        </div>
+    </div>
+
+    <!-- ==================== MENU ==================== -->
+    <section id="menu" class="relative py-24 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto section-reveal">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 glass-panel rounded-full px-4 py-1.5 mb-6">
+                    <iconify-icon icon="mdi:silverware-fork-knife" class="text-gold-300 text-sm"></iconify-icon>
+                    <span class="text-[11px] font-medium text-gold-300 tracking-wider uppercase">Menu Pilihan</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+                    Hidangan <span class="gradient-text">Terbaik</span> Kami
+                </h2>
+                <p class="text-sm font-light text-neutral-400 max-w-lg mx-auto">
+                    Setiap menu disajikan dengan bahan segar dan resep tradisional Sunda yang telah teruji selama puluhan tahun.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 mb-12">
+                <button class="tab-btn active text-xs font-medium px-5 py-2 rounded-full border border-white/10 text-neutral-400 hover:text-white transition-all" data-tab="semua">Semua</button>
+                <button class="tab-btn text-xs font-medium px-5 py-2 rounded-full border border-white/10 text-neutral-400 hover:text-white transition-all" data-tab="makanan">Makanan Berat</button>
+                <button class="tab-btn text-xs font-medium px-5 py-2 rounded-full border border-white/10 text-neutral-400 hover:text-white transition-all" data-tab="sayuran">Sayuran & Lalapan</button>
+                <button class="tab-btn text-xs font-medium px-5 py-2 rounded-full border border-white/10 text-neutral-400 hover:text-white transition-all" data-tab="minuman">Minuman</button>
+            </div>
+
+            <div id="menuGrid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <!-- Makanan Berat -->
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/c9616631-787d-4884-9cc2-46b5c9f4012a.png?auth_key=1880163431-1f31d77d2f1f43b99ea52faf5f873013-0-693edace7fa9c1b79fb19c5cb797e7f3" alt="Nasi Liwet Komplit" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Nasi Liwet Komplit</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 45.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Nasi liwet santan, ayam goreng, teri, tempe, lalapan, dan sambal terasi.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/f448362c-c82e-4e9d-8f37-b47efcd0f550.png?auth_key=1880163431-927b88d3592e436b87ae3ddb179801cc-0-d5cef4504c8733d0205ab9ef15ee09f6" alt="Nasi Timbel Ayam Bakar" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Nasi Timbel Ayam Bakar</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 55.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Nasi dibungkus daun pisang, ayam bakar bumbu kecap, lalapan dan sambal.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/9032e58e-cda3-4284-8a71-693b8f665ec4.png?auth_key=1880163431-60a1427e64074704ba7bcb6092c4db87-0-89fe84c1b01a7ea60608f53c990c73e4" alt="Ikan Bakar Gurame" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Ikan Bakar Gurame</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 85.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Gurame segar bakar bumbu kecap dan sambal terasi, lalapan segar serta nasi putih.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/b98c6ba1-7c67-4f5c-8c13-cc84f4c2858b.png?auth_key=1880163431-12a1f034384349fdb39d52664b22aba6-0-67f22a5a8f35cfadb44484f3ad6f238e" alt="Ayam Goreng Kampung" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Ayam Goreng Kampung</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 50.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Ayam kampung goreng kremes renyah, nasi, lalapan, dan sambal dadak.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/c3f3d22f-45aa-46d9-bccc-2dbfab430f7b.png?auth_key=1880163431-ec0d1cd4c9174d00808170bb4875dc35-0-90e9d5a79e63b90cc51d0103421eebf3" alt="Soto Bandung" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Soto Bandung</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 38.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Kuah bening dengan irisan daging sapi, lobak, dan kacang tanah khas Bandung.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="makanan">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/16402178-4cad-4baa-a6a6-d6da3d10ab00.png?auth_key=1880163431-34f478a828814107b8596987ccd99229-0-1d559e8150d2bab13b8bfd486e527488" alt="Empal Gentong" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Empal Gentong</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 48.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Empal daging sapi dalam kuah santan gurih dengan rempah pilihan dan nasi hangat.</p>
+                    </div>
+                </div>
+
+                <!-- Sayuran & Lalapan -->
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="sayuran">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/37e110a4-bb73-425d-b547-c34ac4d68683.png?auth_key=1880163431-22828af75e564c159801ade952944bac-0-99ef60257f5c24232eff52d88fe5a41a" alt="Karedok" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Karedok</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 22.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Salad Sunda dari sayuran mentah segar dengan bumbu kacang gurih dan pedas.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="sayuran">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/ee1a7fdb-4f0d-4de1-9cb5-1edf0f3e90c1.png?auth_key=1880163431-acc06be6cca04a2ba32cc24a320f8a1b-0-9382a94ed57bed718b877d2600bb4ad3" alt="Sayur Asem" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Sayur Asem</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 20.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Jagung, labu, kacang panjang, dan melinjo dalam kuah asam segar khas Sunda.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="sayuran">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/c9616631-787d-4884-9cc2-46b5c9f4012a.png?auth_key=1880163431-1f31d77d2f1f43b99ea52faf5f873013-0-693edace7fa9c1b79fb19c5cb797e7f3" alt="Tumis Kangkung" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Tumis Kangkung</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 18.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Tumis kangkung segar dengan bumbu terasi yang aroma dan rasanya khas.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="sayuran">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/9032e58e-cda3-4284-8a71-693b8f665ec4.png?auth_key=1880163431-60a1427e64074704ba7bcb6092c4db87-0-89fe84c1b01a7ea60608f53c990c73e4" alt="Pepes Ikan Mas" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Pepes Ikan Mas</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 45.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Ikan mas bumbu lengkap dibungkus daun pisang, dibakar hingga harum.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="sayuran">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/c3f3d22f-45aa-46d9-bccc-2dbfab430f7b.png?auth_key=1880163431-ec0d1cd4c9174d00808170bb4875dc35-0-90e9d5a79e63b90cc51d0103421eebf3" alt="Lalapan Segar" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Lalapan Segar</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 15.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Kol, timun, tomat, terong, kemangi segar dengan sambal terasi dan lalab.</p>
+                    </div>
+                </div>
+
+                <!-- Minuman -->
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="minuman">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/0333762f-e09a-4665-99bc-e89bd5b24310.png?auth_key=1880163431-4c6ebe5f77bd4d38b5de7c0853be3539-0-6d2406f27f6984f3df31c5489d664712" alt="Es Cendol" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Es Cendol</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 18.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Cendol pandan, santan gurih, gula merah cair, dan es serut menyegarkan.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="minuman">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/4505625d-5add-4563-b426-f4e5a8db6bc4.png?auth_key=1880163431-690c21b236b24aebb8120a8699c1df6a-0-f792e2d065e780d8cbda7d34a6bfd5c2" alt="Es Kelapa Muda" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Es Kelapa Muda</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 20.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Kelapa muda segar langsung dari kebun, disajikan dengan es dan sirup gula merah.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="minuman">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/0333762f-e09a-4665-99bc-e89bd5b24310.png?auth_key=1880163431-4c6ebe5f77bd4d38b5de7c0853be3539-0-6d2406f27f6984f3df31c5489d664712" alt="Bajigur" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Bajigur</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 15.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Gula merah, santan, jahe, dan pandan hangat, cocok untuk cuaca dingin Bogor.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="minuman">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/4505625d-5add-4563-b426-f4e5a8db6bc4.png?auth_key=1880163431-690c21b236b24aebb8120a8699c1df6a-0-f792e2d065e780d8cbda7d34a6bfd5c2" alt="Bandrek Susu" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Bandrek Susu</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 15.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Jahe, serai, kayu manis, gula merah dicampur susu segar menghangatkan tubuh.</p>
+                    </div>
+                </div>
+
+                <div class="menu-card glass-panel rounded-2xl overflow-hidden card-glow" data-category="minuman">
+                    <div class="aspect-[4/3] overflow-hidden">
+                        <img src="https://z-cdn-media.chatglm.cn/files/0333762f-e09a-4665-99bc-e89bd5b24310.png?auth_key=1880163431-4c6ebe5f77bd4d38b5de7c0853be3539-0-6d2406f27f6984f3df31c5489d664712" alt="Teh Talua" class="menu-img w-full h-full object-cover">
+                    </div>
+                    <div class="p-5">
+                        <div class="flex items-start justify-between mb-2">
+                            <h3 class="text-base font-medium">Teh Talua</h3>
+                            <span class="price-tag text-xs font-medium text-gold-100 px-3 py-1 rounded-full shrink-0 ml-3">Rp 18.000</span>
+                        </div>
+                        <p class="text-xs text-neutral-500 leading-relaxed">Teh, telur, gula, dan susu dicampur menjadi minuman khas yang menggugah selera.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== GALERI ==================== -->
+    <section id="galeri" class="relative py-24 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto section-reveal">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 glass-panel rounded-full px-4 py-1.5 mb-6">
+                    <iconify-icon icon="mdi:image-multiple-outline" class="text-gold-300 text-sm"></iconify-icon>
+                    <span class="text-[11px] font-medium text-gold-300 tracking-wider uppercase">Galeri</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+                    Momen <span class="gradient-text">Bersama</span> Pelanggan
+                </h2>
+                <p class="text-sm font-light text-neutral-400 max-w-lg mx-auto">
+                    Kehangatan dan kebahagiaan pelanggan kami adalah kebanggaan tersendiri. Berikut beberapa momen istimewa bersama The Rica Resto.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/c9616631-787d-4884-9cc2-46b5c9f4012a.png?auth_key=1880163431-1f31d77d2f1f43b99ea52faf5f873013-0-693edace7fa9c1b79fb19c5cb797e7f3" alt="Nasi goreng spesial" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Nasi Goreng Spesial</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/0333762f-e09a-4665-99bc-e89bd5b24310.png?auth_key=1880163431-4c6ebe5f77bd4d38b5de7c0853be3539-0-6d2406f27f6984f3df31c5489d664712" alt="Minuman segar" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Minuman Segar</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/37e110a4-bb73-425d-b547-c34ac4d68683.png?auth_key=1880163431-22828af75e564c159801ade952944bac-0-99ef60257f5c24232eff52d88fe5a41a" alt="Mie goreng seafood" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Mie Goreng Seafood</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/b98c6ba1-7c67-4f5c-8c13-cc84f4c2858b.png?auth_key=1880163431-12a1f034384349fdb39d52664b22aba6-0-67f22a5a8f35cfadb44484f3ad6f238e" alt="Ayam goreng premium" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Ayam Goreng Premium</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/ee1a7fdb-4f0d-4de1-9cb5-1edf0f3e90c1.png?auth_key=1880163431-acc06be6cca04a2ba32cc24a320f8a1b-0-9382a94ed57bed718b877d2600bb4ad3" alt="Mie seafood spesial" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Mie Seafood Spesial</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/c3f3d22f-45aa-46d9-bccc-2dbfab430f7b.png?auth_key=1880163431-ec0d1cd4c9174d00808170bb4875dc35-0-90e9d5a79e63b90cc51d0103421eebf3" alt="Nasi kuning komplit" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Nasi Kuning Komplit</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/16402178-4cad-4baa-a6a6-d6da3d10ab00.png?auth_key=1880163431-34f478a828814107b8596987ccd99229-0-1d559e8150d2bab13b8bfd486e527488" alt="Set menu spesial" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Set Menu Spesial</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/4505625d-5add-4563-b426-f4e5a8db6bc4.png?auth_key=1880163431-690c21b236b24aebb8120a8699c1df6a-0-f792e2d065e780d8cbda7d34a6bfd5c2" alt="Juice segar buah" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Juice Segar Buah</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square md:col-span-2" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/9032e58e-cda3-4284-8a71-693b8f665ec4.png?auth_key=1880163431-60a1427e64074704ba7bcb6092c4db87-0-89fe84c1b01a7ea60608f53c990c73e4" alt="Ikan bakar premium" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Ikan Bakar Premium</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item relative rounded-2xl overflow-hidden cursor-pointer aspect-square" onclick="openLightbox(this)">
+                    <img src="https://z-cdn-media.chatglm.cn/files/f448362c-c82e-4e9d-8f37-b47efcd0f550.png?auth_key=1880163431-927b88d3592e436b87ae3ddb179801cc-0-d5cef4504c8733d0205ab9ef15ee09f6" alt="Ayam panggang rosa" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                        <span class="text-xs font-medium">Ayam Panggang Rosa</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lightbox -->
+    <div id="lightbox" class="lightbox fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-6" onclick="closeLightbox(event)">
+        <button onclick="closeLightbox(event)" class="absolute top-6 right-6 text-white/70 hover:text-white transition-colors z-10">
+            <iconify-icon icon="mdi:close" class="text-3xl"></iconify-icon>
+        </button>
+        <button onclick="navigateLightbox(-1, event)" class="absolute left-4 md:left-8 text-white/50 hover:text-white transition-colors z-10">
+            <iconify-icon icon="mdi:chevron-left" class="text-4xl"></iconify-icon>
+        </button>
+        <button onclick="navigateLightbox(1, event)" class="absolute right-4 md:right-8 text-white/50 hover:text-white transition-colors z-10">
+            <iconify-icon icon="mdi:chevron-right" class="text-4xl"></iconify-icon>
+        </button>
+        <img id="lightboxImg" src="" alt="" class="lightbox-img max-w-full max-h-[85vh] rounded-2xl object-contain">
+    </div>
+
+    <!-- ==================== LOKASI ==================== -->
+    <section id="lokasi" class="relative py-24 md:py-32 px-6">
+        <div class="max-w-6xl mx-auto section-reveal">
+            <div class="text-center mb-12">
+                <div class="inline-flex items-center gap-2 glass-panel rounded-full px-4 py-1.5 mb-6">
+                    <iconify-icon icon="mdi:map-marker-outline" class="text-gold-300 text-sm"></iconify-icon>
+                    <span class="text-[11px] font-medium text-gold-300 tracking-wider uppercase">Lokasi Kami</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mb-4">
+                    Temukan <span class="gradient-text">The Rica Resto</span>
+                </h2>
+                <p class="text-sm font-light text-neutral-400 max-w-lg mx-auto">
+                    Terletak di Jl. Raya Pajajaran, Bogor Tengah, mudah dijangkau dan dekat dengan pusat kota.
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-5 gap-8">
+                <div class="md:col-span-3 rounded-2xl overflow-hidden border border-white/5" style="min-height: 400px;">
+                    <iframe
+                        src="https://maps.google.com/maps?q=Jl.+Raya+Pajajaran+No.8+RT.02+RW.04+Babakan+Kecamatan+Bogor+Tengah+Kota+Bogor+Jawa+Barat+16151&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                        width="100%" height="100%" style="border:0; min-height:400px;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <div class="md:col-span-2 flex flex-col gap-5">
+                    <div class="glass-panel rounded-2xl p-6 card-glow transition-all duration-500">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gold-300/10 flex items-center justify-center shrink-0">
+                                <iconify-icon icon="mdi:map-marker" class="text-gold-300 text-lg"></iconify-icon>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium mb-1">Alamat</h4>
+                                <p class="text-xs text-neutral-500 leading-relaxed">Jl. Raya Pajajaran No.8, RT.02/RW.04, Babakan, Kec. Bogor Tengah, Kota Bogor, Jawa Barat 16151</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 card-glow transition-all duration-500">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gold-300/10 flex items-center justify-center shrink-0">
+                                <iconify-icon icon="mdi:clock-outline" class="text-gold-300 text-lg"></iconify-icon>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium mb-1">Jam Buka</h4>
+                                <div class="text-xs text-neutral-500 leading-relaxed">
+                                    <div class="flex justify-between gap-6 mb-1"><span>Senin - Jumat</span><span class="text-neutral-300">10:00 - 22:00</span></div>
+                                    <div class="flex justify-between gap-6 mb-1"><span>Sabtu</span><span class="text-neutral-300">09:00 - 23:00</span></div>
+                                    <div class="flex justify-between gap-6"><span>Minggu</span><span class="text-neutral-300">09:00 - 21:00</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 card-glow transition-all duration-500">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gold-300/10 flex items-center justify-center shrink-0">
+                                <iconify-icon icon="mdi:phone-outline" class="text-gold-300 text-lg"></iconify-icon>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium mb-1">Telepon</h4>
+                                <p class="text-xs text-neutral-500">+62 251 837 1234</p>
+                                <p class="text-xs text-neutral-500">+62 812 3456 7890 (WhatsApp)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 card-glow transition-all duration-500">
+                        <div class="flex items-start gap-4">
+                            <div class="w-10 h-10 rounded-xl bg-gold-300/10 flex items-center justify-center shrink-0">
+                                <iconify-icon icon="mdi:instagram" class="text-gold-300 text-lg"></iconify-icon>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-medium mb-1">Sosial Media</h4>
+                                <p class="text-xs text-neutral-500">@thericaresto</p>
+                                <div class="flex gap-3 mt-3">
+                                    <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                                        <iconify-icon icon="mdi:instagram" class="text-neutral-400 hover:text-gold-300 text-sm"></iconify-icon>
+                                    </a>
+                                    <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                                        <iconify-icon icon="mdi:facebook" class="text-neutral-400 hover:text-gold-300 text-sm"></iconify-icon>
+                                    </a>
+                                    <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                                        <iconify-icon icon="mdi:whatsapp" class="text-neutral-400 hover:text-gold-300 text-sm"></iconify-icon>
+                                    </a>
+                                    <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                                        <iconify-icon icon="mdi:tiktok" class="text-neutral-400 hover:text-gold-300 text-sm"></iconify-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="https://www.google.com/maps/dir/?api=1&destination=Jl.+Raya+Pajajaran+No.8+Babakan+Kecamatan+Bogor+Tengah+Kota+Bogor+Jawa+Barat+16151" target="_blank"
+                       class="group flex items-center justify-center gap-2 bg-gradient-to-r from-gold-100 to-gold-400 text-dark-200 text-sm font-medium px-6 py-3.5 rounded-full hover:opacity-90 transition-all mt-auto">
+                        <iconify-icon icon="mdi:navigation-variant-outline"></iconify-icon>
+                        Petunjuk Arah
+                        <iconify-icon icon="mdi:open-in-new" class="text-xs opacity-60"></iconify-icon>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="relative border-t border-white/5 py-16 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-10 mb-12">
+                <div class="md:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold-100 to-gold-400 flex items-center justify-center">
+                            <iconify-icon icon="mdi:food-variant" class="text-dark-200"></iconify-icon>
+                        </div>
+                        <span class="font-semibold tracking-tight">The Rica Resto</span>
+                    </div>
+                    <p class="text-xs text-neutral-500 leading-relaxed mb-4">Masakan Sunda autentik di jantung Kota Bogor. Cita rasa tradisional, suasana modern.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                            <iconify-icon icon="mdi:instagram" class="text-neutral-500 hover:text-gold-300 text-sm"></iconify-icon>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                            <iconify-icon icon="mdi:facebook" class="text-neutral-500 hover:text-gold-300 text-sm"></iconify-icon>
+                        </a>
+                        <a href="#" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-gold-300/10 flex items-center justify-center transition-colors">
+                            <iconify-icon icon="mdi:whatsapp" class="text-neutral-500 hover:text-gold-300 text-sm"></iconify-icon>
+                        </a>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-medium mb-4">Navigasi</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#beranda" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Beranda</a></li>
+                        <li><a href="#tentang" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Tentang Kami</a></li>
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Menu</a></li>
+                        <li><a href="#galeri" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Galeri</a></li>
+                        <li><a href="#lokasi" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Lokasi</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-medium mb-4">Menu Populer</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Nasi Liwet Komplit</a></li>
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Ikan Bakar Gurame</a></li>
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Ayam Goreng Kampung</a></li>
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Karedok</a></li>
+                        <li><a href="#menu" class="text-xs text-neutral-500 hover:text-gold-300 transition-colors">Es Cendol</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-medium mb-4">Kontak</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start gap-2.5">
+                            <iconify-icon icon="mdi:map-marker-outline" class="text-gold-300 text-sm mt-0.5 shrink-0"></iconify-icon>
+                            <span class="text-xs text-neutral-500">Jl. Raya Pajajaran No.8, Babakan, Bogor Tengah, Kota Bogor 16151</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <iconify-icon icon="mdi:phone-outline" class="text-gold-300 text-sm shrink-0"></iconify-icon>
+                            <span class="text-xs text-neutral-500">+62 251 837 1234</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <iconify-icon icon="mdi:email-outline" class="text-gold-300 text-sm shrink-0"></iconify-icon>
+                            <span class="text-xs text-neutral-500">info@thericaresto.id</span>
+                        </li>
+                        <li class="flex items-center gap-2.5">
+                            <iconify-icon icon="mdi:clock-outline" class="text-gold-300 text-sm shrink-0"></iconify-icon>
+                            <span class="text-xs text-neutral-500">Setiap Hari 10:00 - 22:00</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <p class="text-[11px] text-neutral-600">© 2024 The Rica Resto - Bogor. Hak cipta dilindungi.</p>
+                <p class="text-[11px] text-neutral-600">Masakan Sunda Autentik — Jl. Raya Pajajaran, Kota Bogor, Jawa Barat</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button id="backToTop" class="fixed bottom-8 right-8 w-12 h-12 rounded-full bg-gradient-to-r from-gold-100 to-gold-400 text-dark-200 flex items-center justify-center shadow-lg opacity-0 pointer-events-none transition-all duration-300 z-40 hover:opacity-90" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+        <iconify-icon icon="mdi:chevron-up" class="text-xl"></iconify-icon>
+    </button>
+
+    <!-- ==================== JAVASCRIPT ==================== -->
+    <script>
+        document.addEventListener('mousemove', (e) => {
+            document.getElementById('spotlight').style.setProperty('--x', e.clientX + 'px');
+            document.getElementById('spotlight').style.setProperty('--y', e.clientY + 'px');
+        });
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const mobileMenu = document.getElementById('mobileMenu');
+        const mobileClose = document.getElementById('mobileClose');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function openMobile() { mobileMenu.classList.add('open'); mobileOverlay.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
+        function closeMobile() { mobileMenu.classList.remove('open'); mobileOverlay.classList.add('hidden'); document.body.style.overflow = ''; }
+        mobileToggle.addEventListener('click', openMobile);
+        mobileClose.addEventListener('click', closeMobile);
+        mobileOverlay.addEventListener('click', closeMobile);
+        mobileLinks.forEach(link => link.addEventListener('click', closeMobile));
+
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => { if (scrollY >= section.offsetTop - 120) current = section.getAttribute('id'); });
+            navLinks.forEach(link => { link.classList.remove('active'); if (link.getAttribute('href') === '#' + current) link.classList.add('active'); });
+            const btn = document.getElementById('backToTop');
+            if (scrollY > 600) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; } else { btn.style.opacity = '0'; btn.style.pointerEvents = 'none'; }
+            document.getElementById('navbar').style.background = scrollY > 100 ? 'rgba(10,10,10,0.85)' : 'rgba(255,255,255,0.03)';
+        });
+
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const menuCards = document.querySelectorAll('.menu-card');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const tab = btn.dataset.tab;
+                menuCards.forEach((card, i) => {
+                    if (tab === 'semua' || card.dataset.category === tab) {
+                        card.style.display = '';
+                        card.style.opacity = '0'; card.style.transform = 'translateY(20px)';
+                        setTimeout(() => { card.style.transition = 'all 0.4s ease'; card.style.opacity = '1'; card.style.transform = 'translateY(0)'; }, i * 60);
+                    } else { card.style.display = 'none'; }
+                });
+            });
+        });
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImg');
+        let galleryItems = [], currentIndex = 0;
+        document.addEventListener('DOMContentLoaded', () => { galleryItems = Array.from(document.querySelectorAll('.gallery-item img')).map(img => img.src); });
+
+        function openLightbox(el) { const img = el.querySelector('img'); currentIndex = galleryItems.indexOf(img.src); lightboxImg.src = img.src; lightbox.classList.add('show'); document.body.style.overflow = 'hidden'; }
+        function closeLightbox(e) { if (e.target === lightbox || e.currentTarget.tagName === 'BUTTON') { lightbox.classList.remove('show'); document.body.style.overflow = ''; } }
+        function navigateLightbox(dir, e) {
+            e.stopPropagation();
+            currentIndex = (currentIndex + dir + galleryItems.length) % galleryItems.length;
+            lightboxImg.style.opacity = '0'; lightboxImg.style.transform = dir > 0 ? 'translateX(30px)' : 'translateX(-30px)';
+            setTimeout(() => { lightboxImg.src = galleryItems[currentIndex]; lightboxImg.style.transition = 'all 0.3s ease'; lightboxImg.style.opacity = '1'; lightboxImg.style.transform = 'translateX(0)'; }, 150);
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('show')) return;
+            if (e.key === 'Escape') { lightbox.classList.remove('show'); document.body.style.overflow = ''; }
+            if (e.key === 'ArrowLeft') navigateLightbox(-1, e);
+            if (e.key === 'ArrowRight') navigateLightbox(1, e);
+        });
+
+        const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }); }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+        document.querySelectorAll('.section-reveal').forEach(el => observer.observe(el));
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => { anchor.addEventListener('click', function (e) { e.preventDefault(); const t = document.querySelector(this.getAttribute('href')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }); });
+    </script>
+</body>
+</html>
